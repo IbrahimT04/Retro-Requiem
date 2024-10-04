@@ -5,6 +5,8 @@ import time
 from math import sin, cos
 import pygame
 import random
+from color_sampler import SpriteColorSampler
+
 
 score = 0
 
@@ -21,13 +23,13 @@ nMapHeight = 16
 
 fPlayerX = 8.00
 fPlayerY = 14.00
-fPlayerA = math.pi
+fPlayerA = 0.0
 zoom_FOV = math.pi / 7.0
 no_zoom_FOV = math.pi / 4.0
 fFOV = math.pi / 4.0  # Not editable
 fDepth = 16.0
 fSpeed = 3.0
-fEnemySpeed = 0.5
+fEnemySpeed = 0.0
 fBulletSpeed = 7
 elapsedTime = 0  # Not editable
 agro_range = 10
@@ -263,6 +265,7 @@ def main():
         fEyeX = cos(fRayAngle)
         fEyeY = sin(fRayAngle)
         x_temp = 0.0
+        x_dist = 0.0
         delta_distX = math.sqrt(1 + (fEyeY ** 2) / (fEyeX ** 2)) if abs(fEyeX) > 0.0001 else 999999
         delta_distY = math.sqrt(1 + (fEyeX ** 2) / (fEyeY ** 2)) if abs(fEyeY) > 0.0001 else 999999
         mapX = int(fPlayerX)
@@ -287,11 +290,14 @@ def main():
                 mapX += stepX
                 sideDistX += delta_distX
                 side = 5*(sin(fPlayerA)**2)
+                x_dist = sideDistX * sin(fRayAngle) + fPlayerY
+
             else:
                 fDistanceToWall = sideDistY * cos(abs(fRayAngle-fPlayerA))
                 mapY += stepY
                 sideDistY += delta_distY
                 side = 5*(cos(fPlayerA)**2)
+                x_dist = sideDistY * cos(fRayAngle) + fPlayerX
 
             if mapX < 0 or mapX >= nMapWidth or mapY < 0 or mapY >= nMapHeight:
                 bHitWall = True
@@ -398,16 +404,29 @@ def main():
                     shadeCeiling = 255 - int((255 * (nScreenHeight / 2.0) / (y + nScreenHeight / 2.0))/2)
                     shadeWall = int(fDistanceToWall * 255 / fDepth) * ((1+side)/6)
                     shade = abs(shadeWall * (1-nCeilingAntiAliasing) + shadeCeiling * nCeilingAntiAliasing)
-                    color = (int(shade / 5), 0, 255 - int(shade))
+                    # color = (int(shade / 5), 0, 255 - int(shade))
+                    color = (int(shade), int(shade / 1.5), int(shade / 2.5))
                 else:
                     color = (0, 0, 0)
 
             elif int(nCeiling) < y < int(nFloor):
                 if fDistanceToWall < fDepth:
+                    shade = abs(int(fDistanceToWall * 200 / fDepth) * ((1 + side) / 6))
+                    height = int((y-nCeiling) / (nFloor - nCeiling) * 1024)
+                    x_len = abs(x_dist)
+                    x_location = int((x_len - int(x_len))*1024)
+                    color = sampler.get_color(x_location, height)
+                    """\
+                        if not bBoundary else (172, 118, 63)"""
+                    # color = SpriteColorSampler.blend_colors(color, (shade,shade,shade))
+                else:
+                    color = (0, 0, 0)
+
+                """if fDistanceToWall < fDepth:
                     shade = abs(int(fDistanceToWall * 255 / fDepth) * ((1+side)/6))
                 else:
                     shade = 255
-                color = (0, 0, 255 - int(shade)) if bBoundary else (0, 0, int(255/1.1) - int(shade / 1.1))
+                color = (0, 0, 255 - int(shade)) if bBoundary else (0, 0, int(255/1.1) - int(shade / 1.1))"""
 
             # Wall to Floor Anti-Aliasing
             elif y == int(nFloor):
@@ -417,7 +436,9 @@ def main():
                     shade = abs(shadeWall * (1-nFloorAntiAliasing) + shadeFloor * nFloorAntiAliasing)
                 else:
                     shade = 0
-                color = (0, 0, int(shade))
+                # color = (0, 0, int(shade))
+                color = (int(shade), int(shade/1.5), int(shade/2.5))
+
 
             else:
                 shade = int(((1.7 + 1.7 * (vertical_angle + 50) / 200) * (y - nScreenHeight + 0.0) + 255)/2.0)
@@ -637,6 +658,8 @@ back = False
 escape = False
 run = True
 win = False
+
+sampler = SpriteColorSampler("1_diffuseOriginal_converted.png")
 
 try:
     pygame.mouse.set_cursor(pygame.cursors.broken_x)
