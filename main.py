@@ -16,7 +16,7 @@ score = 0
 # ---> High Graphics = 4
 # ---> Ultra Graphics = 3
 # ---> Max Graphics = 2
-pixel_size = 8
+pixel_size = 4
 
 nMapWidth = 16
 nMapHeight = 16
@@ -411,22 +411,15 @@ def main():
 
             elif int(nCeiling) < y < int(nFloor):
                 if fDistanceToWall < fDepth:
-                    shade = abs(int(fDistanceToWall * 200 / fDepth) * ((1 + side) / 6))
+                    shade = abs(((fDistanceToWall / fDepth) * (1 + side) / 6))
                     height = int((y-nCeiling) / (nFloor - nCeiling) * 1024)
                     x_len = abs(x_dist)
                     x_location = int((x_len - int(x_len))*1024)
-                    color = sampler.get_color(x_location, height)
-                    """\
-                        if not bBoundary else (172, 118, 63)"""
-                    # color = SpriteColorSampler.blend_colors(color, (shade,shade,shade))
+                    color = sampler.get_color(x_location, height) \
+                        if not bBoundary else (172, 118, 63)
+                    color = SpriteColorSampler.darken_colors(color, (1.0-shade))
                 else:
                     color = (0, 0, 0)
-
-                """if fDistanceToWall < fDepth:
-                    shade = abs(int(fDistanceToWall * 255 / fDepth) * ((1+side)/6))
-                else:
-                    shade = 255
-                color = (0, 0, 255 - int(shade)) if bBoundary else (0, 0, int(255/1.1) - int(shade / 1.1))"""
 
             # Wall to Floor Anti-Aliasing
             elif y == int(nFloor):
@@ -438,7 +431,6 @@ def main():
                     shade = 0
                 # color = (0, 0, int(shade))
                 color = (int(shade), int(shade/1.5), int(shade/2.5))
-
 
             else:
                 shade = int(((1.7 + 1.7 * (vertical_angle + 50) / 200) * (y - nScreenHeight + 0.0) + 255)/2.0)
@@ -471,7 +463,7 @@ def main():
         for x in range(0, nScreenWidth):
             pixel = pygame.Rect((x * pixel_size, y * pixel_size, pixel_size, pixel_size))
             pygame.draw.rect(screen2, "#{:02x}{:02x}{:02x}".format(*screen[x][y]), pixel)
-    print(1 / elapsedTime if elapsedTime != 0.0 else 0)
+    # print(1 / elapsedTime if elapsedTime != 0.0 else 0)
 
 
 def display_bullets():
