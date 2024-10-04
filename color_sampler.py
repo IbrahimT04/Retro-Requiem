@@ -35,18 +35,34 @@ class SpriteColorSampler:
             return None
 
     @staticmethod
-    def blend_colors(color1, color2):
+    def blend_colors(color1, color2, weightage):
         """
         Blend two colors and return the blended color.
 
-        :param color1: First color as an (R, G, B, A) tuple.
-        :param color2: Second color as an (R, G, B, A) tuple.
-        :return: Blended color as an (R, G, B, A) tuple.
+        :param weightage:
+        :param color1: First color as an (R, G, B) tuple.
+        :param color2: Second color as an (R, G, B) tuple.
+        :return: Blended color as an (R, G, B) tuple.
         """
         blended_color = (
-            int(color1[0] + color2[0]) // 2,  # Red
-            int(color1[1] + color2[1]) // 2,  # Green
-            int(color1[2] + color2[2]) // 2,  # Blue
-            # (color1[3] + color2[3]) // 2   # Alpha (transparency)
+            int(color1[0] * weightage + color2[0] * (1.0-weightage)) // 2,  # Red
+            int(color1[1] * weightage + color2[1] * (1.0-weightage)) // 2,  # Green
+            int(color1[2] * weightage + color2[2] * (1.0-weightage)) // 2,  # Blue
         )
         return blended_color
+
+    @staticmethod
+    def darken_colors(color, weightage):
+        """
+        shade the color to be darker
+
+        :param weightage: Weightage of the darkening
+        :param color: Color as an (R, G, B) tuple.
+        :return: Darkened color as an (R, G, B) tuple.
+        """
+        darkened_color = (
+            int(color[0] * weightage),  # Red
+            int(color[1] * weightage),  # Green
+            int(color[2] * weightage),  # Blue
+        )
+        return darkened_color
