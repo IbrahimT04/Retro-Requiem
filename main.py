@@ -241,7 +241,8 @@ def update_enemies():
 
 def main():
     global tp2, tp1, fPlayerX, fPlayerY, fPlayerA, elapsedTime, scope, vertical_angle, screen, run, win
-
+    
+    # Game loop time calculations
     tp2 = time.time()
 
     if elapsedTime == 0:
@@ -253,6 +254,7 @@ def main():
 
     update_enemies()
 
+    # Ray-Casting Calculations
     for x in range(0, nScreenWidth):
         fRayAngle = (fPlayerA - fFOV / 2.0) + (float(x) / float(nScreenWidth)) * fFOV
         fStepSize = 0.1
@@ -437,7 +439,8 @@ def main():
                 color = (0, 0, shade)
 
             screen[x][y] = color
-
+    
+    # Displaying Add-ons
     for i in range(fBulletSpeed):
         for bul in bullets:
             x, y, z = bul.x, bul.y, bul.z
@@ -463,7 +466,7 @@ def main():
         for x in range(0, nScreenWidth):
             pixel = pygame.Rect((x * pixel_size, y * pixel_size, pixel_size, pixel_size))
             pygame.draw.rect(screen2, "#{:02x}{:02x}{:02x}".format(*screen[x][y]), pixel)
-    # print(1 / elapsedTime if elapsedTime != 0.0 else 0)
+    print(1 / elapsedTime if elapsedTime != 0.0 else 0)
 
 
 def display_bullets():
