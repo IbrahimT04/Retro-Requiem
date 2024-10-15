@@ -44,19 +44,19 @@ map_size = 4
 
 
 g_map = "#######$$#######"
-g_map += "#*+.#.*+.......#"
+g_map += "#...#..........#"
 g_map += "#...#########..#"
-g_map += "#...#*...#..#..#"
+g_map += "#...#....#..#..#"
 g_map += "#...##...#.....#"
-g_map += "#...#..+.......#"
+g_map += "#...#..........#"
 g_map += "#...#######....#"
-g_map += "#........*#....#"
+g_map += "#.........#....#"
 g_map += "#..#####.......#"
-g_map += "#....*.#########"
+g_map += "#......#########"
 g_map += "#..............#"
 g_map += "#....#####.....#"
-g_map += "#+...#.........#"
-g_map += "#.*..#.........#"
+g_map += "#....#.........#"
+g_map += "#....#.........#"
 g_map += "#....#.........#"
 g_map += "################"
 
@@ -241,8 +241,7 @@ def update_enemies():
 
 def main():
     global tp2, tp1, fPlayerX, fPlayerY, fPlayerA, elapsedTime, scope, vertical_angle, screen, run, win
-    
-    # Game loop time calculations
+
     tp2 = time.time()
 
     if elapsedTime == 0:
@@ -254,7 +253,6 @@ def main():
 
     update_enemies()
 
-    # Ray-Casting Calculations
     for x in range(0, nScreenWidth):
         fRayAngle = (fPlayerA - fFOV / 2.0) + (float(x) / float(nScreenWidth)) * fFOV
         fStepSize = 0.1
@@ -414,11 +412,12 @@ def main():
             elif int(nCeiling) < y < int(nFloor):
                 if fDistanceToWall < fDepth:
                     shade = abs(((fDistanceToWall / fDepth) * (1 + side) / 6))
-                    height = int((y-nCeiling) / (nFloor - nCeiling) * 1024)
+                    height = int((y-nCeiling) / (nFloor - nCeiling) * 469)
                     x_len = abs(x_dist)
-                    x_location = int((x_len - int(x_len))*1024)
-                    color = sampler.get_color(x_location, height) \
-                        if not bBoundary else (172, 118, 63)
+                    x_location = int((x_len - int(x_len))*556)
+                    color = sampler.get_color(x_location, height)
+                    """\
+                    if not bBoundary else (172, 118, 63)"""
                     color = SpriteColorSampler.darken_colors(color, (1.0-shade))
                 else:
                     color = (0, 0, 0)
@@ -439,8 +438,7 @@ def main():
                 color = (0, 0, shade)
 
             screen[x][y] = color
-    
-    # Displaying Add-ons
+
     for i in range(fBulletSpeed):
         for bul in bullets:
             x, y, z = bul.x, bul.y, bul.z
@@ -462,8 +460,8 @@ def main():
         win = True
         run = False
 
-    for y in range(0, nScreenHeight):
-        for x in range(0, nScreenWidth):
+    for x in range(0, nScreenWidth):
+        for y in range(0, nScreenHeight):
             pixel = pygame.Rect((x * pixel_size, y * pixel_size, pixel_size, pixel_size))
             pygame.draw.rect(screen2, "#{:02x}{:02x}{:02x}".format(*screen[x][y]), pixel)
     print(1 / elapsedTime if elapsedTime != 0.0 else 0)
@@ -654,7 +652,7 @@ escape = False
 run = True
 win = False
 
-sampler = SpriteColorSampler("1_diffuseOriginal_converted.png")
+sampler = SpriteColorSampler("memeImage.png")
 
 try:
     pygame.mouse.set_cursor(pygame.cursors.broken_x)
